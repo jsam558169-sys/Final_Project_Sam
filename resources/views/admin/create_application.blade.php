@@ -1,6 +1,7 @@
 <x-app-layout>
+
     <x-slot name="header">
-        <h2 class="font-semibold text-xl">Submit Scholarship Application (Admin)</h2>
+        Submit Scholarship Application (Admin)
     </x-slot>
 
     <div class="max-w-3xl mx-auto py-6 sm:px-6 lg:px-8">

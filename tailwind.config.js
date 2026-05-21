@@ -11,8 +11,23 @@ export default {
 
     theme: {
         extend: {
+            colors: {
+                brand: {
+                    navy: '#002147',
+                    crimson: '#A6192E',
+                },
+                neutral: {
+                    heading: '#050505',
+                    body: '#495057',
+                    bg: '#F8F9FA',
+                    divider: '#DEE2E6',
+                }
+            },
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                // High-contrast Serif for headers
+                serif: ['"Playfair Display"', ...defaultTheme.fontFamily.serif],
+                // Clean Sans-serif for body
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
             },
         },
     },

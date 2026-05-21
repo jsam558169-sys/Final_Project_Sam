@@ -11,28 +11,36 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100">
-        @include('layouts.navigation')
+<body class="font-sans antialiased bg-[#F5F7FA] text-[#0F1722]">
+    <div class="min-h-screen">
 
-        <!-- Page Heading -->
+        {{-- Navigation --}}
+        <div class="bg-[#122B4F] border-b border-[#0B1A2F]">
+            @include('layouts.navigation')
+        </div>
+
+        {{-- Page Heading --}}
         @isset($header)
-        <header class="bg-white shadow">
+        <header class="bg-white border-b border-[#CDD6E1] shadow-sm">
             <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                {{ $header }}
+                <h1 class="text-[#122B4F] text-xl font-semibold">
+                    {{ $header }}
+                </h1>
             </div>
         </header>
         @endisset
 
-        <!-- Page Content -->
-        <main>
+        {{-- Page Content --}}
+        <main class="bg-[#F5F7FA]">
             {{ $slot }}
         </main>
+
     </div>
 </body>
 

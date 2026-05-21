@@ -19,10 +19,24 @@ class ScholarshipApplication extends Model
         'course',
         'year_level',
         'status',
-        'remarks'
+        'remarks',
+        'scholarship_id',
+
+        'contact_number',
+        'gwa',
+        'guardian_name',
+
+        'proof_of_income',
+        'report_card',
+        'birth_certificate',
     ];
 
     protected $attributes = [
         'status' => 'Pending',
     ];
+
+    public function scholarship()
+    {
+        return $this->belongsTo(Scholarship::class, 'scholarship_id');
+    }
 }

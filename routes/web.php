@@ -1,11 +1,16 @@
 <?php
 
+//npm run dev
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScholarshipApplicationController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ScholarshipController;
+use App\Http\Controllers\Admin\AnnouncementController;
+use App\Http\Controllers\Student\AnnouncementController as StudentAnnouncementController;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,21 +20,31 @@ use App\Http\Controllers\ScholarshipController;
 
 // Welcome page (public)
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 // Authenticated users dashboard (generic)
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-});
+Route::middleware(['auth', 'verified'])->get('/dashboard', function () {
+    if (Auth::user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+
+    if (Auth::user()->role === 'student') {
+        return redirect()->route('student.dashboard');
+    }
+
+    abort(403);
+})->name('dashboard');
 
 // Profile management
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/announcements', [StudentAnnouncementController::class, 'index'])
+        ->name('announcements.index');
+    Route::get('/announcements/{id}/edit', [AnnouncementController::class, 'edit'])
+        ->name('announcements.edit');
 });
 
 // -----------------
@@ -44,16 +59,26 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Scholarships management (CRUD)
     Route::resource('scholarships', ScholarshipController::class);
 
+    Route::get('/announcements/{id}/view', [AnnouncementController::class, 'view'])->name('announcements.view');
+    Route::resource('announcements', AnnouncementController::class);
+
     // Applications management (CRUD)
     Route::resource('applications', ScholarshipApplicationController::class);
 
-    // Applications management (full CRUD)
-    Route::get('/applications', [ScholarshipApplicationController::class, 'index'])->name('applications.index');
-    Route::get('/applications/create', [ScholarshipApplicationController::class, 'adminCreate'])->name('applications.create');
-    Route::post('/applications', [ScholarshipApplicationController::class, 'adminStore'])->name('applications.store');
-    Route::get('/applications/{id}/edit', [ScholarshipApplicationController::class, 'edit'])->name('applications.edit');
-    Route::put('/applications/{id}', [ScholarshipApplicationController::class, 'update'])->name('applications.update');
-    Route::delete('/applications/{id}', [ScholarshipApplicationController::class, 'destroy'])->name('applications.destroy');
+    Route::get('/announcements', [AnnouncementController::class, 'index'])
+        ->name('announcements.index');
+
+    Route::post('/announcements', [AnnouncementController::class, 'store'])
+        ->name('announcements.store');
+
+    Route::put('/announcements/{id}', [AnnouncementController::class, 'update'])
+        ->name('announcements.update');
+
+    Route::delete('/announcements/{id}', [AnnouncementController::class, 'destroy'])
+        ->name('announcements.destroy');
+
+    Route::get('/announcements/{id}/edit', [AnnouncementController::class, 'edit'])
+        ->name('announcements.edit');
 });
 
 // -----------------
@@ -62,14 +87,21 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
 
     // Student dashboard
-    Route::get('/dashboard', [StudentController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [ScholarshipApplicationController::class, 'dashboard'])->name('dashboard');
 
     // Student applications (view + create only)
     Route::get('/applications', [ScholarshipApplicationController::class, 'index'])->name('applications.index');
     Route::get('/applications/create', [ScholarshipApplicationController::class, 'create'])->name('applications.create');
     Route::post('/applications', [ScholarshipApplicationController::class, 'store'])->name('applications.store');
 
-    // Students cannot edit or delete applications
+    Route::get('/scholarships', [ScholarshipController::class, 'studentIndex'])
+        ->name('scholarships.index');
+
+    Route::get('/announcements', [StudentAnnouncementController::class, 'index'])
+        ->name('announcements.index');
+
+    Route::get('/applications/{application}/view', [ScholarshipApplicationController::class, 'view'])
+        ->name('applications.view');
 });
 
 // Auth routes (Breeze)
